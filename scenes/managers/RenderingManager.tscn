@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://qhjxx7j7jajm"]
+
+[ext_resource type="Script" path="res://scripts/managers/RenderingManager.cs" id="1_oxhdr"]
+
+[node name="RenderingManager" type="Node"]
+script = ExtResource("1_oxhdr")
