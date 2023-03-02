@@ -1,0 +1,11 @@
+{
+	"disabled_build_options": {
+		"disable_3d": true,
+		"disable_3d_physics": true,
+		"openxr": false
+	},
+	"disabled_classes": [
+
+	],
+	"type": "build_profile"
+}

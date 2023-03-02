@@ -1,36 +1,52 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Game.Utils;
 using Godot;
 
-namespace Components.Logic;
+namespace Game.Components.Logic.Coroutines;
 
+// TODO(calco): Make this more customizable
 public partial class CoroutineComponent : Node
 {
     [Export] public bool Finished { get; private set; } = false;
-    [Export] public bool UpdateSelf { get; set; } = false;
     [Export] public bool RemoveOnCompletion { get; set; } = true;
+    [Export] public bool UpdateSelf { get; set; } = false;
+
+    private Optional<IYieldable> _yieldable;
 
     [Signal]
     public delegate void OnFinishedEventHandler();
-    [Signal]
-    public delegate void OnYieldEventHandler();
 
-    private float _waitTime;
+    // TODO(calco): Convert this to a singal. Sadly, they don't support interface sharing and idunno if it's worth making this a resource.
+    public Action<IYieldable> OnYielded;
+
     private readonly Stack<IEnumerator> _enumerators;
 
-    public CoroutineComponent(IEnumerator function, bool removeOnComplete = true, bool updateSelf = false)
+    public CoroutineComponent(IEnumerator function, bool removeOnComplete = true, bool updateSelf = false, string name = "")
     {
         _enumerators = new Stack<IEnumerator>();
 
         if (function != null)
         {
             _enumerators.Push(function);
+
+            if (name != "")
+                Name = name;
             Name = nameof(function);
         }
 
         RemoveOnCompletion = removeOnComplete;
         UpdateSelf = updateSelf;
-        _waitTime = 0;
+
+        Finished = false;
+        OnYielded ??= null;
+    }
+
+    // Added so that editor can spawn this component, without running into issues.
+    public CoroutineComponent()
+    {
+        // TODO(calco): Add code for this
     }
 
     public override void _Process(double delta)
@@ -41,9 +57,9 @@ public partial class CoroutineComponent : Node
 
     public void Update(float delta)
     {
-        if (_waitTime > 0)
+        if (_yieldable.HasValue && !_yieldable.Value.IsDone)
         {
-            _waitTime -= delta;
+            _yieldable.Value.Update(delta);
             return;
         }
 
@@ -57,12 +73,11 @@ public partial class CoroutineComponent : Node
         IEnumerator now = _enumerators.Peek();
         if (now.MoveNext())
         {
-            if (now.Current is int ci)
-                _waitTime = ci;
-            else if (now.Current is float cf)
-                _waitTime = cf;
-            else if (now.Current is IEnumerator cie)
-                _enumerators.Push(cie);
+            if (now.Current is not IYieldable yieldable)
+                return;
+
+            _yieldable.Value = yieldable;
+            OnYielded?.Invoke(_yieldable.Value);
         }
         else
         {
@@ -76,8 +91,11 @@ public partial class CoroutineComponent : Node
     {
         Finished = true;
 
-        EmitSignal(SignalName.OnYield);
         EmitSignal(SignalName.OnFinished);
+        if (_yieldable.HasValue)
+            OnYielded?.Invoke(_yieldable.Value);
+
+        _yieldable.Clear();
 
         if (RemoveOnCompletion)
             QueueFree();
@@ -85,16 +103,16 @@ public partial class CoroutineComponent : Node
 
     public void Cancel()
     {
-        _enumerators.Clear();
         Finished = true;
-        _waitTime = 0f;
+        _yieldable.Clear();
+        _enumerators.Clear();
     }
 
     public void Replace(IEnumerator function)
     {
         Finished = false;
-        _waitTime = 0f;
 
+        _yieldable.Clear();
         _enumerators.Clear();
         _enumerators.Push(function);
     }

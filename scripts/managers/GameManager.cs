@@ -1,15 +1,17 @@
 using Godot;
 using Godot.Collections;
+using GodotUtilities;
 
 namespace Managers;
 
 public partial class GameManager : Node
 {
+    [Node]
+    private ResourcePreloader _resourcePreloader;
+
     public static GameManager Instance { get; private set; }
 
     public static Node Root { get; private set; }
-
-    // TODO(calco): Implement a proper scene manager.
     public static Node2D SceneRoot { get; private set; }
 
     public static float Time { get; private set; } = 0f;
@@ -30,10 +32,20 @@ public partial class GameManager : Node
 
     #endregion
 
-    public override void _Notification(long what)
+    // public override void _Notification(long what)
+    // {
+    //     if (what == NotificationSceneInstantiated)
+    //     {
+    //         Instance = this;
+    //     }
+    // }
+
+    public override void _Notification(int what)
     {
-        if (what == NotificationEnterTree)
+        if (what == NotificationSceneInstantiated)
+        {
             Instance = this;
+        }
     }
 
     public override void _EnterTree()
@@ -63,7 +75,7 @@ public partial class GameManager : Node
 
     public override void _PhysicsProcess(double delta)
     {
-        GlobalWorld = SceneRoot.GetWorld2d();
+        GlobalWorld = SceneRoot.GetWorld2D();
         PhysicsDelta = (float)delta;
     }
 

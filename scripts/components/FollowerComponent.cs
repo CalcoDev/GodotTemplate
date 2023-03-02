@@ -15,6 +15,14 @@ public partial class FollowerComponent : Node
         UpdateSelf = updateSelf;
     }
 
+    // Added so that editor can spawn this component, without running into issues.
+    public FollowerComponent()
+    {
+        Follower = null;
+        Followee = null;
+        UpdateSelf = false;
+    }
+
     public override void _Process(double delta)
     {
         if (UpdateSelf)

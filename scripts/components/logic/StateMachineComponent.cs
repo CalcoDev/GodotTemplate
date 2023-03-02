@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Game.Components.Logic.Coroutines;
 using Godot;
 
 namespace Components.Logic;
@@ -16,14 +17,14 @@ public partial class StateMachineComponent : Node
 
     private int _stateCount;
 
-    private Action[] _enters;
-    private Func<int>[] _updates;
-    private Action[] _exits;
+    private readonly Action[] _enters;
+    private readonly Func<int>[] _updates;
+    private readonly Action[] _exits;
 
-    private Func<IEnumerator>[] _coroutines;
-    private CoroutineComponent _currentCoroutine;
+    private readonly Func<IEnumerator>[] _coroutines;
+    private readonly CoroutineComponent _currentCoroutine;
 
-    public void Init(int maxStates, int defaultState)
+    public StateMachineComponent(int maxStates, int defaultState)
     {
         _stateCount = maxStates;
 
@@ -36,6 +37,22 @@ public partial class StateMachineComponent : Node
         this.AddChild(_currentCoroutine);
 
         _previousState = _state = defaultState;
+    }
+
+    // Added so that editor can spawn this component, without running into issues.
+    public StateMachineComponent()
+    {
+        _stateCount = 0;
+
+        _enters = Array.Empty<Action>();
+        _updates = Array.Empty<Func<int>>();
+        _exits = Array.Empty<Action>();
+
+        _coroutines = Array.Empty<Func<IEnumerator>>();
+        _currentCoroutine = new CoroutineComponent(null, false, false);
+        this.AddChild(_currentCoroutine);
+
+        _previousState = _state = -1;
     }
 
     public override void _Process(double delta)

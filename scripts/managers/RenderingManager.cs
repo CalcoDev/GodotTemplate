@@ -16,9 +16,9 @@ public partial class RenderingManager : Node
     public static RenderingManager Instance { get; private set; }
     private readonly Dictionary<float, PixelatedRenderingLayer> _layers = new Dictionary<float, PixelatedRenderingLayer>();
 
-    public override void _Notification(long what)
+    public override void _Notification(int what)
     {
-        if (what == NotificationEnterTree)
+        if (what == NotificationSceneInstantiated)
             Instance = this;
     }
 
@@ -58,11 +58,11 @@ public partial class RenderingManager : Node
     {
         SubViewport subViewport = new SubViewport
         {
-            Size = new Vector2i(320, 180),
+            Size = new Vector2I(320, 180),
             TransparentBg = true,
-            Disable3d = true,
-            Snap2dTransformsToPixel = true,
-            Snap2dVerticesToPixel = true
+            Disable3D = true,
+            Snap2DTransformsToPixel = true,
+            Snap2DVerticesToPixel = true
         };
 
         TextureRect textureRect = new TextureRect

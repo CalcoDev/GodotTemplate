@@ -27,6 +27,14 @@ public partial class TimerComponent : Node
         RemoveOnComplete = removeOnComplete;
     }
 
+    // Added so that editor can spawn this component, without running into issues.
+    public TimerComponent()
+    {
+        Time = 0f;
+        UpdateSelf = false;
+        RemoveOnComplete = false;
+    }
+
     public override void _Process(double delta)
     {
         if (UpdateSelf)
