@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://ddd5t57absvy"]
+
+[ext_resource type="Script" path="res://scripts/components/logic/coroutines/CoroutineComponent.cs" id="1_hmdlo"]
+
+[node name="CoroutineComponent" type="Node"]
+script = ExtResource("1_hmdlo")

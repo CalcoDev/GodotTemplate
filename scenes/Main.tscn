@@ -1,20 +1,16 @@
 [gd_scene load_steps=5 format=3 uid="uid://cjjin3npj7t0j"]
 
-[ext_resource type="Script" path="res://scripts/components/FollowerComponent.cs" id="1_t74xm"]
-[ext_resource type="Script" path="res://scripts/components/logic/StateMachineComponent.cs" id="2_tvraq"]
-[ext_resource type="Script" path="res://scripts/components/logic/TimerComponent.cs" id="3_2wh4m"]
-[ext_resource type="Script" path="res://scripts/components/logic/coroutines/CoroutineComponent.cs" id="4_70dy0"]
+[ext_resource type="PackedScene" uid="uid://dc6p8rgmglefo" path="res://scenes/components/FollowerComponent.tscn" id="1_025fn"]
+[ext_resource type="PackedScene" uid="uid://madi510sjop8" path="res://scenes/components/logic/StateMachineComponent.tscn" id="2_710n8"]
+[ext_resource type="PackedScene" uid="uid://bqrdolfqcdrdg" path="res://scenes/components/logic/TimerComponent.tscn" id="3_g7eny"]
+[ext_resource type="PackedScene" uid="uid://ddd5t57absvy" path="res://scenes/components/logic/CoroutineComponent.tscn" id="4_2ph6t"]
 
 [node name="Main" type="Node2D"]
 
-[node name="FollowerComponent" type="Node2D" parent="."]
-script = ExtResource("1_t74xm")
+[node name="FollowerComponent" parent="." instance=ExtResource("1_025fn")]
 
-[node name="StateMachineComponent" type="Node" parent="."]
-script = ExtResource("2_tvraq")
+[node name="StateMachineComponent" parent="." instance=ExtResource("2_710n8")]
 
-[node name="TimerComponent" type="Node" parent="."]
-script = ExtResource("3_2wh4m")
+[node name="TimerComponent" parent="." instance=ExtResource("3_g7eny")]
 
-[node name="CoroutineComponent" type="Node" parent="."]
-script = ExtResource("4_70dy0")
+[node name="CoroutineComponent" parent="." instance=ExtResource("4_2ph6t")]

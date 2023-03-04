@@ -1,3 +1,4 @@
+using Game.Managers;
 using Godot;
 using Godot.Collections;
 using GodotUtilities;
@@ -12,7 +13,6 @@ public partial class GameManager : Node
     public static GameManager Instance { get; private set; }
 
     public static Node Root { get; private set; }
-    public static Node2D SceneRoot { get; private set; }
 
     public static float Time { get; private set; } = 0f;
     public static uint FrameCount { get; private set; } = 0;
@@ -32,20 +32,20 @@ public partial class GameManager : Node
 
     #endregion
 
-    // public override void _Notification(long what)
-    // {
-    //     if (what == NotificationSceneInstantiated)
-    //     {
-    //         Instance = this;
-    //     }
-    // }
-
     public override void _Notification(int what)
     {
         if (what == NotificationSceneInstantiated)
         {
             Instance = this;
+            this.WireNodes();
         }
+    }
+
+    private void InstantiateResource(string name)
+    {
+        Resource res = _resourcePreloader.GetResource(name);
+        Node node = ((PackedScene)res).Instantiate();
+        AddChild(node);
     }
 
     public override void _EnterTree()
@@ -56,8 +56,20 @@ public partial class GameManager : Node
     public override void _Ready()
     {
         Root = GetTree().Root;
-        SceneRoot = GetTree().CurrentScene as Node2D;
+
+        InstantiateResource("CoroutineManager");
+        InstantiateResource("SceneManager");
+
+        CallDeferred(nameof(HandleInitialScene));
     }
+
+    private void HandleInitialScene()
+    {
+        var scene = Root.GetChild<Node2D>(GetChildCount() - 1);
+        Root.RemoveChild(scene);
+        SceneManager.LoadScene(scene);
+    }
+
 
     public override void _Process(double delta)
     {
@@ -75,7 +87,7 @@ public partial class GameManager : Node
 
     public override void _PhysicsProcess(double delta)
     {
-        GlobalWorld = SceneRoot.GetWorld2D();
+        // GlobalWorld = SceneManager.CurrentScene.GetWorld2D();
         PhysicsDelta = (float)delta;
     }
 

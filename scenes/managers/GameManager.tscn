@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://bjmg01x68j1yw"]
+[gd_scene load_steps=4 format=3 uid="uid://bjmg01x68j1yw"]
 
 [ext_resource type="Script" path="res://scripts/managers/GameManager.cs" id="1_gvgbc"]
+[ext_resource type="PackedScene" uid="uid://cjd1k2lhownvg" path="res://scenes/managers/CoroutineManager.tscn" id="2_tbugt"]
+[ext_resource type="PackedScene" uid="uid://dox178dwqutf8" path="res://scenes/managers/SceneManager.tscn" id="3_d7xjy"]
 
 [node name="GameManager" type="Node"]
 script = ExtResource("1_gvgbc")
+
+[node name="ResourcePreloader" type="ResourcePreloader" parent="."]
+resources = [PackedStringArray("CoroutineManager", "SceneManager"), [ExtResource("2_tbugt"), ExtResource("3_d7xjy")]]
